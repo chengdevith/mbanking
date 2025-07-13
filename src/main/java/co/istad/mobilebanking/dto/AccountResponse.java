@@ -1,7 +1,5 @@
 package co.istad.mobilebanking.dto;
 
-import co.istad.mobilebanking.domain.AccountType;
-
 import java.math.BigDecimal;
 
 public record AccountResponse(
