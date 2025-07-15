@@ -17,9 +17,12 @@ public class TransactionType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,unique = true,length = 100)
     private String type;
 
+    @Column(nullable = false)
+    private Boolean isDeleted;
+
     @OneToMany(mappedBy = "transactionType")
-    private List<Transaction> transaction;
+    private List<Transaction> transactions;
 }

@@ -1,12 +1,12 @@
 package co.istad.mobilebanking.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class KYC {
@@ -24,6 +24,7 @@ public class KYC {
     @Column(nullable = false)
     private Boolean isDeleted;
 
-    @OneToOne
+    @OneToOne(optional = false)
+    @JoinColumn(name = "customer_id", nullable = false, unique = true)
     private Customer customer;
 }

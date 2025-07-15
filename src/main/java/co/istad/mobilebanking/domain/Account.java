@@ -29,11 +29,11 @@ public class Account {
     @Column(nullable = false)
     private Boolean isDeleted;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "cust_id", referencedColumnName = "id")
     private Customer customer;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     private AccountType accountType;
 
     @OneToMany(mappedBy = "sender")

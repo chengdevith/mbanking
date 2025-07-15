@@ -9,6 +9,7 @@ import co.istad.mobilebanking.dto.UpdateAccountRequest;
 import co.istad.mobilebanking.mapper.AccountMapper;
 import co.istad.mobilebanking.repository.AccountRepository;
 import co.istad.mobilebanking.repository.CustomerRepository;
+import co.istad.mobilebanking.repository.CustomerSegmentRepository;
 import co.istad.mobilebanking.service.AccountService;
 import co.istad.mobilebanking.util.Util;
 import jakarta.transaction.Transactional;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -27,21 +29,30 @@ public class AccountServiceImpl implements AccountService {
     private final CustomerRepository customerRepository;
     private final AccountMapper accountMapper;
     private final Util util;
+    private final CustomerSegmentRepository customerSegmentRepository;
 
     @Override
     public AccountResponse createNew(CreateAccountRequest createAccountRequest) {
 
         Customer customer = customerRepository
-                .findByPhoneNumber(createAccountRequest.phoneNumber())
+                .findByPhoneNumberAndIsDeletedFalse(createAccountRequest.phoneNumber())
                 .orElseThrow(()->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer phone number not found")
                 );
+
 
         Account account = accountMapper.fromAccountRequest(createAccountRequest);
         account.setActNo(util.generateRandomActNo());
         account.setIsDeleted(false);
         account.setCustomer(customer);
-        account = accountRepository.save(account);
+
+        if (customer.getCustomerSegment().getSegment().equals("Gold")) {
+            account.setOverLimit(BigDecimal.valueOf(50000));
+        }else if (customer.getCustomerSegment().getSegment().equals("Silver")) {
+            account.setOverLimit(BigDecimal.valueOf(10000));
+        }else{
+            account.setOverLimit(BigDecimal.valueOf(1000));
+        }
 
         return accountMapper.toAccountResponse(account);
     }
@@ -65,7 +76,7 @@ public class AccountServiceImpl implements AccountService {
     public AccountResponse findByCustomer(String phoneNumber) {
 
         Customer customer = customerRepository
-                .findByPhoneNumber(phoneNumber)
+                .findByPhoneNumberAndIsDeletedFalse(phoneNumber)
                 .orElseThrow(()->
                         new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer not found")
                 );

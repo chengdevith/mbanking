@@ -24,12 +24,17 @@ public class Transaction {
     @Column(columnDefinition = "TEXT")
     private String remark;
 
-    @ManyToOne
+    @Column(nullable = false)
+    private Boolean isDeleted;
+
+    @ManyToOne(optional = false)
     private TransactionType transactionType;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
+    private Account receiver;
+
+    @ManyToOne(optional = false)
     private Account sender;
 
-    @ManyToOne
-    private Account receiver;
+
 }

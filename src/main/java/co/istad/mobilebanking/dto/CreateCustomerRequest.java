@@ -1,9 +1,6 @@
 package co.istad.mobilebanking.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.*;
 
 public record CreateCustomerRequest(
 
@@ -18,10 +15,15 @@ public record CreateCustomerRequest(
         String gender,
 
         @NotBlank(message = "Phone Number is require")
-        @Min(value = 5,message = "Invalid Phone Number")
-        @Max(value = 15,message = "Invalid Phone Number")
+        @Size(min = 5, max = 15, message = "Invalid Phone Number")
         String phoneNumber,
 
-        String remark
+        String remark,
+
+        @NotBlank(message = "segmentType is require")
+        String segmentType,
+
+        @NotBlank(message = "national card id is require")
+        String nationalCardId
 ) {
 }

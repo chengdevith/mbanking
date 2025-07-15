@@ -15,8 +15,6 @@ public record CreateAccountRequest(
 
         @NotBlank(message = "Balance is require")
         @Min(value = 5L,message = "Balance must be greater than $5")
-        BigDecimal balance,
-
-        BigDecimal overLimit
+        BigDecimal balance
 ) {
 }
