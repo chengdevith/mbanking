@@ -4,7 +4,6 @@ import co.istad.mobilebanking.dto.CreateCustomerRequest;
 import co.istad.mobilebanking.dto.CustomerResponse;
 import co.istad.mobilebanking.dto.UpdateCustomerRequest;
 import co.istad.mobilebanking.service.CustomerService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,7 @@ public class CustomerController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public CustomerResponse createNew(@Valid @RequestBody CreateCustomerRequest createCustomerRequest) {
+    public CustomerResponse createNew(@RequestBody CreateCustomerRequest createCustomerRequest) {
         return customerService.createNew(createCustomerRequest);
     }
 
@@ -37,7 +36,7 @@ public class CustomerController {
     @PatchMapping("/{phoneNumber}")
     public CustomerResponse updatePhoneNumber(
             @PathVariable String phoneNumber,
-            @Valid @RequestBody UpdateCustomerRequest updateCustomerRequest
+            @RequestBody UpdateCustomerRequest updateCustomerRequest
     ) {
         return customerService.updateByPhoneNumber(phoneNumber, updateCustomerRequest);
     }
