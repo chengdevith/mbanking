@@ -1,6 +1,7 @@
 package co.istad.mobilebanking.service.impl;
 
 import co.istad.mobilebanking.domain.Account;
+import co.istad.mobilebanking.domain.AccountType;
 import co.istad.mobilebanking.domain.Customer;
 import co.istad.mobilebanking.dto.AccountResponse;
 import co.istad.mobilebanking.dto.CreateAccountRequest;
@@ -8,9 +9,11 @@ import co.istad.mobilebanking.dto.DisableAccountRequest;
 import co.istad.mobilebanking.dto.UpdateAccountRequest;
 import co.istad.mobilebanking.mapper.AccountMapper;
 import co.istad.mobilebanking.repository.AccountRepository;
+import co.istad.mobilebanking.repository.AccountTypeRepository;
 import co.istad.mobilebanking.repository.CustomerRepository;
 import co.istad.mobilebanking.repository.CustomerSegmentRepository;
 import co.istad.mobilebanking.service.AccountService;
+import co.istad.mobilebanking.util.CurrencyUtil;
 import co.istad.mobilebanking.util.Util;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +32,14 @@ public class AccountServiceImpl implements AccountService {
     private final CustomerRepository customerRepository;
     private final AccountMapper accountMapper;
     private final Util util;
-    private final CustomerSegmentRepository customerSegmentRepository;
+    private final AccountTypeRepository accountTypeRepository;
+
 
     @Override
     public AccountResponse createNew(CreateAccountRequest createAccountRequest) {
+
+        AccountType accountType = accountTypeRepository.findByType(createAccountRequest.type())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "account type not found"));
 
         Customer customer = customerRepository
                 .findByPhoneNumberAndIsDeletedFalse(createAccountRequest.phoneNumber())
@@ -40,19 +47,52 @@ public class AccountServiceImpl implements AccountService {
                         new ResponseStatusException(HttpStatus.NOT_FOUND,"Customer phone number not found")
                 );
 
-
         Account account = accountMapper.fromAccountRequest(createAccountRequest);
-        account.setActNo(util.generateRandomActNo());
         account.setIsDeleted(false);
+        account.setAccountType(accountType);
         account.setCustomer(customer);
 
-        if (customer.getCustomerSegment().getSegment().equals("Gold")) {
-            account.setOverLimit(BigDecimal.valueOf(50000));
-        }else if (customer.getCustomerSegment().getSegment().equals("Silver")) {
-            account.setOverLimit(BigDecimal.valueOf(10000));
-        }else{
-            account.setOverLimit(BigDecimal.valueOf(1000));
+        switch (createAccountRequest.currency()){
+            case CurrencyUtil.USD -> {
+                if(createAccountRequest.balance().compareTo(new BigDecimal(10)) < 0){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be greater than 10 USD");
+                }
+
+                if (customer.getCustomerSegment().getSegment().equals("Gold")) {
+                    account.setOverLimit(BigDecimal.valueOf(50000));
+                }else if (customer.getCustomerSegment().getSegment().equals("Silver")) {
+                    account.setOverLimit(BigDecimal.valueOf(10000));
+                }else{
+                    account.setOverLimit(BigDecimal.valueOf(1000));
+                }
+            }
+            case CurrencyUtil.KHR -> {
+
+                if(createAccountRequest.balance().compareTo(new BigDecimal(40000)) < 0){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be greater than 40,000 KHR");
+                }
+
+                if (customer.getCustomerSegment().getSegment().equals("Gold")) {
+                    account.setOverLimit(BigDecimal.valueOf(50000 * 4000));
+                }else if (customer.getCustomerSegment().getSegment().equals("Silver")) {
+                    account.setOverLimit(BigDecimal.valueOf(10000 * 4000));
+                }else{
+                    account.setOverLimit(BigDecimal.valueOf(1000 * 4000));
+                }
+            }
+            default -> throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "currency not supported");
         }
+
+        if(createAccountRequest.actNo() != null){
+            if (accountRepository.existsByActNo(createAccountRequest.actNo())) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "account number already exists");
+            }
+            account.setActNo(createAccountRequest.actNo());
+        }else {
+            account.setActNo(util.generateRandomActNo());
+        }
+
+
 
         return accountMapper.toAccountResponse(account);
     }

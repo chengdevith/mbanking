@@ -1,11 +1,12 @@
 package co.istad.mobilebanking.controller;
 
+import co.istad.mobilebanking.domain.KYC;
+import co.istad.mobilebanking.dto.KYCResponse;
 import co.istad.mobilebanking.service.KYCService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/kycs")
@@ -17,6 +18,11 @@ public class KYCController {
     @PostMapping("/{nationalCardId}")
     public void verify(@PathVariable String nationalCardId) {
         kycService.verify(nationalCardId);
+    }
+
+    @GetMapping
+    public List<KYCResponse> findAll() {
+        return kycService.findAll();
     }
 
 }

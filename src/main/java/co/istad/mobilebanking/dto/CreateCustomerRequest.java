@@ -2,6 +2,8 @@ package co.istad.mobilebanking.dto;
 
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
+
 public record CreateCustomerRequest(
 
         @NotBlank(message = "Name is require")
@@ -13,6 +15,8 @@ public record CreateCustomerRequest(
 
         @NotBlank(message = "Gender is require")
         String gender,
+
+        LocalDate dob,
 
         @NotBlank(message = "Phone Number is require")
         @Size(min = 5, max = 15, message = "Invalid Phone Number")

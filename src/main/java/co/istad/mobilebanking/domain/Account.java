@@ -1,5 +1,6 @@
 package co.istad.mobilebanking.domain;
 
+import co.istad.mobilebanking.util.CurrencyUtil;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,8 @@ public class Account {
     private BigDecimal overLimit;
     @Column(nullable = false)
     private Boolean isDeleted;
+
+    private CurrencyUtil currency;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "cust_id", referencedColumnName = "id")

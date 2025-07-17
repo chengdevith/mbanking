@@ -12,8 +12,7 @@ import lombok.*;
 public class KYC {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String uuid;
+    private Long uuid;
 
     @Column(unique = true, nullable = false,length = 12)
     private String nationalCardId;
@@ -25,6 +24,7 @@ public class KYC {
     private Boolean isDeleted;
 
     @OneToOne(optional = false)
+    @MapsId
     @JoinColumn(name = "customer_id", nullable = false, unique = true)
     private Customer customer;
 }

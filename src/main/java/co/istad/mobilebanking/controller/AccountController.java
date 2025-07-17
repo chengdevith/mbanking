@@ -6,6 +6,7 @@ import co.istad.mobilebanking.dto.CreateAccountRequest;
 import co.istad.mobilebanking.dto.DisableAccountRequest;
 import co.istad.mobilebanking.dto.UpdateAccountRequest;
 import co.istad.mobilebanking.service.AccountService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,7 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public AccountResponse createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
+    public AccountResponse createAccount(@Valid @RequestBody CreateAccountRequest createAccountRequest) {
         return accountService.createNew(createAccountRequest);
     }
 
@@ -46,12 +47,12 @@ public class AccountController {
     }
 
     @PatchMapping("/{actNo}")
-    public AccountResponse updateByActNo(@PathVariable String actNo, @RequestBody UpdateAccountRequest updateAccountRequest) {
+    public AccountResponse updateByActNo(@PathVariable String actNo,@Valid @RequestBody UpdateAccountRequest updateAccountRequest) {
         return accountService.updateByActNo(actNo, updateAccountRequest);
     }
 
     @PutMapping("/{actNo}")
-    public AccountResponse disableByActNo(@PathVariable String actNo, @RequestBody DisableAccountRequest disableAccountRequest) {
+    public AccountResponse disableByActNo(@PathVariable String actNo,@Valid @RequestBody DisableAccountRequest disableAccountRequest) {
         return accountService.disableByActNo(actNo, disableAccountRequest);
     }
 }

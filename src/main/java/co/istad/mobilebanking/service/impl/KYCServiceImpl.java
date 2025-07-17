@@ -1,6 +1,8 @@
 package co.istad.mobilebanking.service.impl;
 
 import co.istad.mobilebanking.domain.KYC;
+import co.istad.mobilebanking.dto.KYCResponse;
+import co.istad.mobilebanking.mapper.KYCMapper;
 import co.istad.mobilebanking.repository.KYCRepository;
 import co.istad.mobilebanking.service.KYCService;
 import lombok.RequiredArgsConstructor;
@@ -8,11 +10,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class KYCServiceImpl implements KYCService {
 
     private final KYCRepository kycRepository;
+    private final KYCMapper kycMapper;
 
     @Override
     public void verify(String nationalCardId) {
@@ -27,5 +32,10 @@ public class KYCServiceImpl implements KYCService {
 
         kycRepository.save(kyc);
 
+    }
+
+    @Override
+    public List<KYCResponse> findAll() {
+        return kycMapper.fromKYCtoKYCResponseList(kycRepository.findAll());
     }
 }

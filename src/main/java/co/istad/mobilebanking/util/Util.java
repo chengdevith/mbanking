@@ -15,9 +15,8 @@ public class Util {
     public String generateRandomActNo() {
         String actNo;
         do{
-            actNo = String.valueOf(100_000_000 + new Random().nextInt(900_000_000));
+            actNo = String.valueOf(100_000_000 + new Random().nextInt(999_999_999));
         }while (accountRepository.existsByActNo(actNo));
         return actNo;
     }
-
 }
