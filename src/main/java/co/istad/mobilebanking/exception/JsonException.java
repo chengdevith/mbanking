@@ -21,5 +21,4 @@ public class JsonException {
                 .details(e.getMessage())
                 .build();
     }
-
 }

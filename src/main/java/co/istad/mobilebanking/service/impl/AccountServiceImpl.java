@@ -57,7 +57,6 @@ public class AccountServiceImpl implements AccountService {
                 if(createAccountRequest.balance().compareTo(new BigDecimal(10)) < 0){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Balance must be greater than 10 USD");
                 }
-
                 if (customer.getCustomerSegment().getSegment().equals("Gold")) {
                     account.setOverLimit(BigDecimal.valueOf(50000));
                 }else if (customer.getCustomerSegment().getSegment().equals("Silver")) {
